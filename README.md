@@ -37,13 +37,26 @@ Here are a few screenshots of what it looks like right now:
 
 - Get a free API key at [OpenAI](https://platform.openai.com/account/api-keys)
 
+- Install dependencies
+
+  ```sh
+  npm install
+  ```
+
 - Initialize the project
 
   ```sh
   npx remix init
   ```
 
-- Initial setup: _If you just generated this project, this step has been done for you._
+  - Copy .env.example to .env and change the SESSION_SECRET to something different
+
+  ```sh
+  DATABASE_URL="file:./data.db?connection_limit=1"
+  SESSION_SECRET="super-duper-s3cret"
+  ```
+
+- Initial setup:
 
   ```sh
   npm run setup
