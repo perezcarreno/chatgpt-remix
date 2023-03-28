@@ -97,6 +97,7 @@ This is a basic implementation of a ChatGPT conversations interface, but it's a 
 - [x] Integrate streaming responses from the ChatGPT API
 - [x] Keep persistent message history for each user and conversation in the database
 - [ ] Styling enhancements
+- [ ] System message UI
 - [ ] Support for embeddings
 - [ ] Support for AWS DynamoDB database and AWS hosting
 - [ ] Support for Cloudflare Workers and Durable Objects/KV
@@ -116,7 +117,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 ## Contact
 
-Your Name - [@perezcarreno](https://twitter.com/perezcarreno) - email@example.com
+Armando J. Perez-Carreno - [@perezcarreno](https://twitter.com/perezcarreno)
 
 Project Link: [https://github.com/perezcarreno/chatgpt-remix](https://github.com/perezcarreno/chatgpt-remix)
 
