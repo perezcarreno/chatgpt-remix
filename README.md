@@ -83,7 +83,7 @@ The database seed script creates a new user with some data you can use to get st
 
 ### Relevant code:
 
-This is a basic implementation of a ChatGPT conversations interface, but it's a good example of how you can build a full stack app with Prisma and Remix. The main functionality is creating users, logging in and out, and creating and deleting conversations that interact with the ChatGPT API.
+This is a basic implementation of a ChatGPT conversations interface, but it's a good example of how you can build a full stack app with Prisma and Remix. The main functionality is creating users, logging in and out, and creating and deleting conversations that interact with the ChatGPT API. You can change the system message to have it follow your desired personality.
 
 - creating users, and logging in and out [./app/models/user.server.ts](./app/models/user.server.ts)
 - user sessions, and verifying them [./app/session.server.ts](./app/session.server.ts)
@@ -97,8 +97,9 @@ This is a basic implementation of a ChatGPT conversations interface, but it's a 
 - [x] Integrate streaming responses from the ChatGPT API
 - [x] Keep persistent message history for each user and conversation in the database
 - [ ] Styling enhancements
-- [ ] Add support for AWS DynamoDB database and AWS hosting
-- [ ] Add support for Cloudflare Workers and Durable Objects/KV
+- [ ] Support for embeddings
+- [ ] Support for AWS DynamoDB database and AWS hosting
+- [ ] Support for Cloudflare Workers and Durable Objects/KV
 - [ ] Include unit tests
 
 ### Type Checking
