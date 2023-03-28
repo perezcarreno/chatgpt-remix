@@ -10,6 +10,15 @@ I created this project because I could not find complete examples on how to use 
 
 This will be an evolving project to which I will add new features, better styling, etc. So if you're interested, hop on for the ride!
 
+## Features
+
+- Multiple users
+- Multiple conversations per user
+- Message history stored in the database
+- Context-aware conversations based on all previous messages up to the token limit for the model
+- System message (allows instructions for assistant personalization)
+- Message streaming ("responds as if typing") via SSE (Server-side-events)
+
 ## What's in the stack
 
 - Integration with [OpenAI's Chat completions API](https://platform.openai.com/docs/guides/chat)
@@ -101,6 +110,7 @@ This is a basic implementation of a ChatGPT conversations interface, but it's a 
 - [ ] Support for embeddings
 - [ ] Support for AWS DynamoDB database and AWS hosting
 - [ ] Support for Cloudflare Workers and Durable Objects/KV
+- [ ] Support for other authentication methods
 - [ ] Include unit tests
 
 ### Type Checking
