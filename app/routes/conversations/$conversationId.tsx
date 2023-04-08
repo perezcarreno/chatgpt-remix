@@ -244,11 +244,11 @@ function MessageInput(props: { newMessage: string; setNewMessage: Function }) {
       );
 
       sse.addEventListener("open", (event) => {
-        console.log("EventSource connection opened:", event);
+        //console.log("EventSource connection opened:", event);
       });
 
       sse.addEventListener("message", (event) => {
-        console.log("EventSource message:", event);
+        //console.log("EventSource message:", event);
         // If the stream is done, save the complete message to the db
         if (event.data === "[DONE]") {
           sse.close();
