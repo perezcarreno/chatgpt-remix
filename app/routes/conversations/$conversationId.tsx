@@ -2,7 +2,6 @@ import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import {
   Form,
-  useCatch,
   useLoaderData,
   useFetcher,
   useParams,
@@ -17,6 +16,7 @@ import {
 import { getMessageListItems, createMessage } from "~/models/message.server";
 import { requireUserId } from "~/session.server";
 import ReactMarkdown from "react-markdown";
+import cuid from "cuid";
 
 export async function loader({ request, params }: LoaderArgs) {
   const userId = await requireUserId(request);
@@ -71,14 +71,14 @@ export async function action({ request, params }: ActionArgs) {
     // Create user's message in the database
 
     await createMessage({
-      id: crypto.randomUUID(),
+      userId,
+      id: cuid(),
+      conversationId: params.conversationId,
       role: "user",
       content: text,
-      userId,
-      conversationId: params.conversationId,
     });
 
-    return json({ ok: true });
+    return json({ createdMessage: true });
   }
 }
 
@@ -144,7 +144,7 @@ export default function ConversationDetailsPage() {
                           <ReactMarkdown>{message.content}</ReactMarkdown>
                         </div>
                       </div>
-                      <div className="visible mt-2 flex justify-center gap-3 self-end text-gray-400 md:gap-4 lg:absolute lg:top-0 lg:right-0 lg:mt-0 lg:translate-x-full lg:gap-1 lg:self-center lg:pl-2">
+                      <div className="visible mt-2 flex justify-center gap-3 self-end text-gray-400 md:gap-4 lg:absolute lg:right-0 lg:top-0 lg:mt-0 lg:translate-x-full lg:gap-1 lg:self-center lg:pl-2">
                         <button
                           className="rounded-md p-1 hover:bg-gray-100 hover:text-gray-700 md:invisible md:group-hover:visible"
                           onClick={() => {
@@ -178,7 +178,7 @@ export default function ConversationDetailsPage() {
                     <ReactMarkdown>{newMessage}</ReactMarkdown>
                   </div>
                 </div>
-                <div className="visible mt-2 flex justify-center gap-3 self-end text-gray-400 md:gap-4 lg:absolute lg:top-0 lg:right-0 lg:mt-0 lg:translate-x-full lg:gap-1 lg:self-center lg:pl-2"></div>
+                <div className="visible mt-2 flex justify-center gap-3 self-end text-gray-400 md:gap-4 lg:absolute lg:right-0 lg:top-0 lg:mt-0 lg:translate-x-full lg:gap-1 lg:self-center lg:pl-2"></div>
                 <div className="flex justify-between"></div>
               </div>
             </div>
@@ -231,16 +231,24 @@ function MessageInput(props: { newMessage: string; setNewMessage: Function }) {
   };
 
   useEffect(() => {
+    // fetcher.type === "done" (v2)
+    let isDone = messageFetcher.state === "idle" && messageFetcher.data != null;
     // Don't do anything if the fecher is idle and hasn't done anything
-    if (messageFetcher.state === "submitting") {
+    if (isDone) {
       // Set the completion streaming to true
       setIsCompletionStreaming(true);
-      // Only run the query if we have submitted a message
+
+      // Create a new event source for the completion stream
       const sse = new EventSource(
         `/completion?conversationId=${conversationId}`
       );
 
+      sse.addEventListener("open", (event) => {
+        console.log("EventSource connection opened:", event);
+      });
+
       sse.addEventListener("message", (event) => {
+        console.log("EventSource message:", event);
         // If the stream is done, save the complete message to the db
         if (event.data === "[DONE]") {
           sse.close();
@@ -262,7 +270,7 @@ function MessageInput(props: { newMessage: string; setNewMessage: Function }) {
       });
 
       sse.addEventListener("error", (event) => {
-        console.log("error: ", event);
+        console.log("EvenSource error: ", event);
         // Reset the state variable for the new message
         props.setNewMessage("");
         setIsCompletionStreaming(false);
@@ -300,7 +308,7 @@ function MessageInput(props: { newMessage: string; setNewMessage: Function }) {
           name="_action"
           value="createMessage"
           disabled={isCompletionStreaming}
-          className="ml-4 rounded bg-blue-500 py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
+          className="ml-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
         >
           {isCompletionStreaming ? "Processing..." : "Send"}
         </button>
@@ -313,14 +321,4 @@ export function ErrorBoundary({ error }: { error: Error }) {
   console.error(error);
 
   return <div>An unexpected error occurred: {error.message}</div>;
-}
-
-export function CatchBoundary() {
-  const caught = useCatch();
-
-  if (caught.status === 404) {
-    return <div>Conversation not found</div>;
-  }
-
-  throw new Error(`Unexpected caught response with status: ${caught.status}`);
 }
