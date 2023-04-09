@@ -105,12 +105,11 @@ This is a basic implementation of a ChatGPT conversations interface, but it's a 
 
 - [x] Integrate streaming responses from the ChatGPT API
 - [x] Keep persistent message history for each user and conversation in the database
+- [x] Support for Fly.io
 - [ ] Styling enhancements
 - [ ] Mobile drawer sidebar
 - [ ] System message UI
 - [ ] Support for embeddings
-- [ ] Support for AWS DynamoDB database and AWS hosting
-- [ ] Support for Cloudflare Workers and Durable Objects/KV
 - [ ] Support for other authentication methods
 - [ ] Include unit tests
 
