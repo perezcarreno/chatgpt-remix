@@ -149,6 +149,13 @@ Prior to your first deployment, you'll need to do a few things:
 
   If you don't have openssl installed, you can also use [1password](https://1password.com/password-generator/) to generate a random secret, just replace `$(openssl rand -hex 32)` with the generated secret.
 
+- Add your `OPENAI_API_KEY` to your fly app secrets, to do this you can run the following command: (replace with your API KEY)
+
+  ```sh
+  fly secrets set OPENAI_API_KEY=sk-XXXXXXXXXXXXXXXXXXXX --app chatgpt-remix
+  fly secrets set OPENAI_API_KEY=sk-XXXXXXXXXXXXXXXXXXXX --app chatgpt-remix-staging
+  ```
+
 - Create a persistent volume for the sqlite database for both your staging and production environments. Run the following:
 
   ```sh
