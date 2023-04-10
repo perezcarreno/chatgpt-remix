@@ -15,16 +15,15 @@ let openai = new OpenAIApi(
   })
 );
 
-let assistantFullMessage = "";
-let userId: string = "";
-let conversationId = "";
-
 /**
  * ChatGPT Related Variables
  */
 const maxContextTokens = 4095;
 let maxResponseTokens = 1024;
 const maxPromptTokens = maxContextTokens - maxResponseTokens;
+
+// Create a string to hold the full message from the assistant
+let assistantFullMessage = "";
 
 /**
  * Message interface
@@ -42,13 +41,17 @@ interface message {
  */
 let streamCompletion = async function (
   data: { toString: () => string },
+  userId: string,
+  conversationId: string,
   send: Function
 ) {
+  // Split the data into lines
   const lines = data
     .toString()
     .split("\n")
     .filter((line: string) => line.trim() !== "");
 
+  // Go through each line
   for (const line of lines) {
     const message = line.toString().replace(/^data: /, "");
 
@@ -65,7 +68,9 @@ let streamCompletion = async function (
 
       // Let the client know the stream is done
       send({ event: "message", data: "[DONE]" });
-      //console.log("Stream finished");
+      // Clear the assistantFullMessage
+      assistantFullMessage = "";
+      console.log("Stream finished");
 
       return; // Stream finished
     } else {
@@ -94,9 +99,9 @@ let streamCompletion = async function (
  * @returns
  */
 export async function loader({ request }: LoaderArgs) {
-  userId = await requireUserId(request);
+  let userId = await requireUserId(request);
 
-  conversationId =
+  let conversationId =
     new URL(request.url).searchParams.get("conversationId") || "";
 
   if (!conversationId) {
@@ -188,7 +193,7 @@ export async function loader({ request }: LoaderArgs) {
     return eventStream(request.signal, function setup(send) {
       const dataStream = response.data as unknown as OpenAIReadable;
       dataStream.on("data", (data: any) => {
-        streamCompletion(data, send);
+        streamCompletion(data, userId, conversationId, send);
       });
 
       return function clear() {};
