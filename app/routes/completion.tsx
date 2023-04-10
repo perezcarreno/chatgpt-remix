@@ -65,7 +65,7 @@ let streamCompletion = async function (
 
       // Let the client know the stream is done
       send({ event: "message", data: "[DONE]" });
-      console.log("Stream finished");
+      //console.log("Stream finished");
 
       return; // Stream finished
     } else {
@@ -80,7 +80,6 @@ let streamCompletion = async function (
         let delta = parsed.choices[0].delta?.content;
 
         if (delta) {
-          console.log("-- message:", delta); //TODO remove debug
           send({ event: "message", data: delta });
 
           // Concatenate the response to the full message
