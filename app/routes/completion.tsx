@@ -4,6 +4,7 @@ import { requireUserId } from "~/session.server";
 import { createMessage, getMessageListItems } from "~/models/message.server";
 import { Configuration, OpenAIApi, ChatCompletionRequestMessage } from "openai";
 import { Readable } from "stream";
+import cuid from "cuid";
 const { Tiktoken } = require("@dqbd/tiktoken/lite");
 
 const cl100k_base = require("@dqbd/tiktoken/encoders/cl100k_base.json");
@@ -14,7 +15,6 @@ let openai = new OpenAIApi(
   })
 );
 
-let assistantMessageId = "";
 let assistantFullMessage = "";
 let userId: string = "";
 let conversationId = "";
@@ -56,7 +56,7 @@ let streamCompletion = async function (
     if (message === "[DONE]") {
       // Create messages in the database
       await createMessage({
-        id: assistantMessageId,
+        id: cuid(),
         role: "assistant",
         content: assistantFullMessage,
         userId,
@@ -71,10 +71,6 @@ let streamCompletion = async function (
     } else {
       try {
         const parsed = JSON.parse(message);
-        // Get the message id from the assistant's response (only once)
-        if (!assistantMessageId) {
-          assistantMessageId = parsed.id;
-        }
 
         // Get the content of each message
         let delta = parsed.choices[0].delta?.content;
